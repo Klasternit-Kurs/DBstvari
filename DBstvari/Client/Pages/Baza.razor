@@ -1,0 +1,31 @@
+﻿@page "/baza"
+@using DBstvari.Shared
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NM
+
+<h3>Baza</h3>
+
+<button @onclick="SignalRTest">Test</button>
+
+@code 
+{
+	public HubConnection HC;
+
+	protected override async Task OnInitializedAsync()
+	{
+		HC = new HubConnectionBuilder().WithUrl(NM.ToAbsoluteUri("/db")).Build();
+		await HC.StartAsync();
+	}
+
+	public Task SignalRTest()
+	{
+		List<Osoba> lO = new List<Osoba>();
+
+		lO.Add(new Osoba("Pera", "Peric"));
+		lO.Add(new Osoba("Neko", "Nekic"));
+		lO.Add(new Osoba("Trecko", "Treckovic"));
+
+		return HC.SendAsync("PrimiPodatke", lO); 
+	}
+
+}
