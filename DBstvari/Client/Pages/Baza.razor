@@ -5,15 +5,31 @@
 
 <h3>Baza</h3>
 
-<button @onclick="SignalRTest">Test</button>
+<button @onclick="SignalRTest">Upisi u bazu</button>
+<button @onclick="Procitaj">Zgrabi podatke :)</button>
+
+<ul>
+	@foreach(Osoba o in Osobe)
+	{
+		<li>@o</li>
+	}
+</ul>
 
 @code 
 {
 	public HubConnection HC;
+	public List<Osoba> Osobe { get; set; } = new List<Osoba>();
 
 	protected override async Task OnInitializedAsync()
 	{
 		HC = new HubConnectionBuilder().WithUrl(NM.ToAbsoluteUri("/db")).Build();
+
+		HC.On<List<Osoba>>("KlijentPrima", listaO =>
+		{
+			Osobe = listaO;
+			StateHasChanged();
+		});
+
 		await HC.StartAsync();
 	}
 
@@ -25,7 +41,11 @@
 		lO.Add(new Osoba("Neko", "Nekic"));
 		lO.Add(new Osoba("Trecko", "Treckovic"));
 
-		return HC.SendAsync("PrimiPodatke", lO); 
+		return HC.SendAsync("PrimiPodatke", lO);
 	}
 
+	public Task Procitaj()
+	{
+		return HC.SendAsync("DajPodatke");
+	}
 }

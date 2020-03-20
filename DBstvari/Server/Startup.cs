@@ -13,6 +13,11 @@ namespace DBstvari.Server
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
+
+			using (var ser = new EF.DB())
+			{
+				ser.Database.EnsureCreated();
+			}
 		}
 
 		public IConfiguration Configuration { get; }

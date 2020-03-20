@@ -11,10 +11,18 @@ namespace DBstvari.Server.SignalR
 	{
 		public async Task PrimiPodatke(List<Osoba> listO)
 		{
+			EF.DB baza = new EF.DB();
 			foreach(Osoba o in listO)
 			{
-				Console.WriteLine(o);
+				baza.Osobas.Add(o);
 			}
+			await baza.SaveChangesAsync();
+		}
+
+		public async Task DajPodatke()
+		{
+			EF.DB baza = new EF.DB();
+			await Clients.Caller.SendAsync("KlijentPrima", baza.Osobas.ToList());
 		}
 	}
 }
